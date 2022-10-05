@@ -13,6 +13,7 @@ public class sofitayang {
     private static ArrayList<Koki> arrayKokiLayanan = new ArrayList<Koki>();;
     private static ArrayList<Pelanggan> arrayPelanggan = new ArrayList<Pelanggan>();;
     private static ArrayList<Pelanggan> arrayPelangganHarian = new ArrayList<Pelanggan>();;
+    private static ArrayList<Pesanan> arrayPesanan = new ArrayList<Pesanan>();;
     private static Queue<Integer> arrayLayanan = new LinkedList<Integer>();;
     private static Queue<Integer> arrayMakanan = new LinkedList<Integer>();;
 
@@ -83,16 +84,21 @@ public class sofitayang {
             for (int k = 0; k < jumlahLayanan; k++) {
                 char jenisLayanan = in.next().charAt(0);
                 if (jenisLayanan == 'P') {
+                    int a = 0; // counter untuk array pesanan
                     int idPelanggan = in.nextInt();
                     int indexMakanan = in.nextInt();
-                    arrayLayanan.add(idPelanggan);
-                    arrayMakanan.add(indexMakanan);
-                    int indexKoki = layananP(idPelanggan - 1, indexMakanan - 1);
-                    out.println(indexKoki);
+                    char jenisMakanan = arrayMenu.get(indexMakanan - 1).getJenis();
+                    Pesanan objPesanan = new Pesanan(idPelanggan, indexMakanan, jenisMakanan);
+                    arrayPesanan.add(objPesanan);
+                    layananP(idPelanggan - 1, indexMakanan - 1);
+                    out.println(arrayPesanan.get(a).getKoki().getId());
+                    a++;
                 } else if (jenisLayanan == 'L') {
-                    layananL(arrayMakanan.poll() - 1);
+                    int b = 0; // counter untuk array layanan
+                    layananL(arrayPesanan.get(b));
                     // out.println(arrayKokiS.first().getPelayanan() + "s");
-                    out.println(arrayLayanan.poll());
+                    out.println(arrayPesanan.get(b).getIdPelanggan());
+                    b++;
 
                 } else if (jenisLayanan == 'B') {
                     int idPelanggan = in.nextInt();
@@ -164,22 +170,7 @@ public class sofitayang {
         return -1;
     }
 
-    public static void layananL(int indexMakanan) {
-        arrayKokiLayanan.get(0).setPelayanan(arrayKokiLayanan.get(0).getPelayanan() + 1);
-        Koki temp_koki = arrayKokiLayanan.remove(0);
-        char jenisMakanan = arrayMenu.get(indexMakanan).getJenis();
-        if (jenisMakanan == 'A') {
-            arrayKokiA.remove(arrayKokiA.first());
-            arrayKokiA.add(temp_koki);
-        } else if (jenisMakanan == 'G') {
-            arrayKokiA.remove(arrayKokiG.first());
-            arrayKokiG.add(temp_koki);
-        } else if (jenisMakanan == 'S') {
-            arrayKokiS.add(temp_koki);
-            arrayKokiA.remove(arrayKokiS.first());
-        }
-        arrayKoki.add(temp_koki);
-        arrayKoki.remove(arrayKoki.first());
+    public static void layananL(Pesanan objPesanan) {
     }
 
     public static int layananB(int idPelanggan) {
@@ -217,12 +208,15 @@ public class sofitayang {
             return '+';
         }
     }
+
     public static TreeSet<Koki> getArrayKokiA() {
         return arrayKokiA;
     }
+
     public static TreeSet<Koki> getArrayKokiS() {
         return arrayKokiS;
     }
+
     public static TreeSet<Koki> getArrayKokiG() {
         return arrayKokiG;
     }
@@ -351,25 +345,42 @@ class Koki implements Comparable<Koki> {
     }
 
 }
-class pesanan{
-    Pelanggan pelanggan;
-    Menu menu; 
+
+class Pesanan {
+    int idPelanggan;
+    int indexMakanan;
+    char jenisMakanan;
     Koki koki;
 
-    public pesanan(Pelanggan pelanggan, Menu menu, Koki koki) {
-        this.pelanggan = pelanggan;
-        this.menu = menu;
-        this.koki = kokiTersedia(menu.getJenis());
+    public Pesanan(int idPelanggan, int indexMakanan, char jenisMakanan) {
+        this.idPelanggan = idPelanggan;
+        this.indexMakanan = indexMakanan;
+        this.koki = kokiTersedia(jenisMakanan);
     }
 
-    public Koki kokiTersedia(char spesialis){
-        if(spesialis == 'S'){
+    public Koki kokiTersedia(char spesialis) {
+        if (spesialis == 'S') {
             return sofitayang.getArrayKokiS().first();
-        }else if(spesialis == 'G'){
+        } else if (spesialis == 'G') {
             return sofitayang.getArrayKokiG().first();
-        }else{
+        } else {
             return sofitayang.getArrayKokiA().first();
         }
     }
 
+    public int getIdPelanggan() {
+        return idPelanggan;
+    }
+
+    public int getIndexMakanan() {
+        return indexMakanan;
+    }
+
+    public char getJenisMakanan() {
+        return jenisMakanan;
+    }
+
+    public Koki getKoki() {
+        return koki;
+    }
 }
